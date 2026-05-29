@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { isAuthenticated } from "@/lib/auth-token";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { OverviewCards, OverviewCardsSkeleton } from "@/components/report/OverviewCards";
@@ -12,6 +13,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/relatorio")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw redirect({ to: "/auth" });
+    }
+  },
   component: SustainabilityReportPage,
   head: () => ({
     meta: [
