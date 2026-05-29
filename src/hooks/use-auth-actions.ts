@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { loginUserMock, registerUserMock } from "@/lib/api/auth";
+import { loginUser, registerUser } from "@/lib/api/auth";
 import { saveAuthToken } from "@/lib/auth-token";
 import type { LoginCredentials, RegisterUserData } from "@/types/auth";
 import { AUTH_SUCCESS_REDIRECT } from "@/types/auth";
@@ -24,14 +24,9 @@ export function useAuthActions(): UseAuthActionsResult {
     async (credentials: LoginCredentials) => {
       setIsLoading(true);
       setApiError(null);
-
       try {
-        // Substituir loginUserMock por loginUser (fetch/axios → POST /api/auth/login)
-        const response = await loginUserMock(credentials);
-
+        const response = await loginUser(credentials);
         saveAuthToken(response.token);
-        // localStorage.setItem('token', response.token) — equivalente via saveAuthToken
-
         navigate({ to: AUTH_SUCCESS_REDIRECT });
       } catch (err) {
         setApiError(err instanceof Error ? err.message : "Falha ao entrar. Tente novamente.");
@@ -46,13 +41,9 @@ export function useAuthActions(): UseAuthActionsResult {
     async (data: RegisterUserData) => {
       setIsLoading(true);
       setApiError(null);
-
       try {
-        // Substituir registerUserMock por registerUser (fetch/axios → POST /api/auth/register)
-        const response = await registerUserMock(data);
-
+        const response = await registerUser(data);
         saveAuthToken(response.token);
-
         navigate({ to: AUTH_SUCCESS_REDIRECT });
       } catch (err) {
         setApiError(
@@ -65,11 +56,5 @@ export function useAuthActions(): UseAuthActionsResult {
     [navigate],
   );
 
-  return {
-    isLoading,
-    apiError,
-    handleLogin,
-    handleRegister,
-    clearApiError,
-  };
+  return { isLoading, apiError, handleLogin, handleRegister, clearApiError };
 }

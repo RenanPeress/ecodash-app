@@ -1,19 +1,23 @@
-const builds = [
-  { id: "#2481", time: "há 2 min", grade: "A", branch: "main" },
-  { id: "#2480", time: "há 1 h", grade: "A", branch: "feat/cache" },
-  { id: "#2479", time: "há 3 h", grade: "B", branch: "main" },
-  { id: "#2478", time: "ontem", grade: "A", branch: "fix/loop" },
-  { id: "#2477", time: "ontem", grade: "C", branch: "experiment" },
-  { id: "#2476", time: "2d", grade: "B", branch: "main" },
-];
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { DashboardData } from "@/lib/api/dashboard";
 
 const gradeStyles: Record<string, string> = {
+  AAA: "bg-primary/10 text-primary",
+  AA: "bg-primary/10 text-primary",
   A: "bg-primary/10 text-primary",
   B: "bg-[oklch(0.78_0.16_75/0.15)] text-[oklch(0.55_0.16_75)]",
   C: "bg-destructive/10 text-destructive",
+  D: "bg-destructive/15 text-destructive",
 };
 
-export function HistoryPanel() {
+interface HistoryPanelProps {
+  data: DashboardData | null;
+  isLoading: boolean;
+}
+
+export function HistoryPanel({ data, isLoading }: HistoryPanelProps) {
   return (
     <div
       className="rounded-2xl border border-border bg-card p-6 h-full"
@@ -22,32 +26,54 @@ export function HistoryPanel() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="font-display text-lg font-semibold tracking-tight">Histórico Recente</h2>
-          <p className="text-xs text-muted-foreground">Últimas execuções</p>
+          <p className="text-xs text-muted-foreground">Últimas análises</p>
         </div>
-        <button className="text-xs font-medium text-primary hover:underline">Ver tudo</button>
       </div>
 
-      <ul className="space-y-2">
-        {builds.map((b) => (
-          <li
-            key={b.id}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition cursor-pointer"
-          >
-            <div
-              className={`h-10 w-10 rounded-xl grid place-items-center font-display font-semibold ${
-                gradeStyles[b.grade]
-              }`}
+      {isLoading ? (
+        <ul className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <li key={i} className="flex items-center gap-3 p-3">
+              <Skeleton className="h-10 w-10 rounded-xl shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3.5 w-32" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <Skeleton className="h-3 w-12" />
+            </li>
+          ))}
+        </ul>
+      ) : !data || data.recent.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-8">
+          Nenhuma análise encontrada.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {data.recent.map((item) => (
+            <li
+              key={item.id}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition cursor-pointer"
             >
-              {b.grade}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Build {b.id}</p>
-              <p className="text-xs text-muted-foreground truncate">{b.branch}</p>
-            </div>
-            <span className="text-xs text-muted-foreground">{b.time}</span>
-          </li>
-        ))}
-      </ul>
+              <div
+                className={`h-10 w-10 rounded-xl grid place-items-center font-display font-semibold text-xs ${
+                  gradeStyles[item.grade] ?? gradeStyles["B"]
+                }`}
+              >
+                {item.grade}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{item.software_name}</p>
+                <p className="text-xs text-muted-foreground">
+                  SCI: {item.sci_score.toLocaleString("pt-BR", { maximumSignificantDigits: 3 })} gCO₂
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground shrink-0">
+                {formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: ptBR })}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -6,7 +6,38 @@ interface EnergyConsumptionCardProps {
   valueKwh: number;
 }
 
+function formatEnergy(kwh: number): { value: string; unit: string; description: string } {
+  if (kwh >= 1) {
+    return {
+      value: kwh.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+      unit: "kWh",
+      description: "Quilowatts-hora (kWh)",
+    };
+  }
+  if (kwh >= 0.001) {
+    return {
+      value: (kwh * 1000).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      unit: "Wh",
+      description: "Watts-hora (Wh)",
+    };
+  }
+  if (kwh >= 0.000001) {
+    return {
+      value: (kwh * 1_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      unit: "µWh",
+      description: "Microwatts-hora (µWh)",
+    };
+  }
+  return {
+    value: (kwh * 1_000_000_000).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    unit: "nWh",
+    description: "Nanowatts-hora (nWh)",
+  };
+}
+
 export function EnergyConsumptionCard({ valueKwh }: EnergyConsumptionCardProps) {
+  const { value, unit, description } = formatEnergy(valueKwh);
+
   return (
     <Card
       className="rounded-2xl border-border transition hover:-translate-y-0.5"
@@ -24,17 +55,15 @@ export function EnergyConsumptionCard({ valueKwh }: EnergyConsumptionCardProps) 
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
-          <span className="font-display text-4xl font-semibold tracking-tight">
-            {valueKwh.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-          </span>
-          <span className="text-sm font-medium text-muted-foreground">kWh</span>
+          <span className="font-display text-4xl font-semibold tracking-tight">{value}</span>
+          <span className="text-sm font-medium text-muted-foreground">{unit}</span>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Consumo total de energia estimado no período analisado.
+          Consumo total de energia estimado na execução analisada.
         </p>
       </CardContent>
       <CardFooter className="pt-0">
-        <span className="text-xs text-muted-foreground">Quilowatts-hora (kWh)</span>
+        <span className="text-xs text-muted-foreground">{description}</span>
       </CardFooter>
     </Card>
   );
