@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RelatorioRouteImport } from './routes/relatorio'
 import { Route as ComparacaoRouteImport } from './routes/comparacao'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AnaliseRouteImport } from './routes/analise'
 import { Route as IndexRouteImport } from './routes/index'
 
 const RelatorioRoute = RelatorioRouteImport.update({
@@ -23,6 +25,16 @@ const ComparacaoRoute = ComparacaoRouteImport.update({
   path: '/comparacao',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnaliseRoute = AnaliseRouteImport.update({
+  id: '/analise',
+  path: '/analise',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +43,38 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analise': typeof AnaliseRoute
+  '/auth': typeof AuthRoute
   '/comparacao': typeof ComparacaoRoute
   '/relatorio': typeof RelatorioRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analise': typeof AnaliseRoute
+  '/auth': typeof AuthRoute
   '/comparacao': typeof ComparacaoRoute
   '/relatorio': typeof RelatorioRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analise': typeof AnaliseRoute
+  '/auth': typeof AuthRoute
   '/comparacao': typeof ComparacaoRoute
   '/relatorio': typeof RelatorioRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/comparacao' | '/relatorio'
+  fullPaths: '/' | '/analise' | '/auth' | '/comparacao' | '/relatorio'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/comparacao' | '/relatorio'
-  id: '__root__' | '/' | '/comparacao' | '/relatorio'
+  to: '/' | '/analise' | '/auth' | '/comparacao' | '/relatorio'
+  id: '__root__' | '/' | '/analise' | '/auth' | '/comparacao' | '/relatorio'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnaliseRoute: typeof AnaliseRoute
+  AuthRoute: typeof AuthRoute
   ComparacaoRoute: typeof ComparacaoRoute
   RelatorioRoute: typeof RelatorioRoute
 }
@@ -75,6 +95,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ComparacaoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analise': {
+      id: '/analise'
+      path: '/analise'
+      fullPath: '/analise'
+      preLoaderRoute: typeof AnaliseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +121,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnaliseRoute: AnaliseRoute,
+  AuthRoute: AuthRoute,
   ComparacaoRoute: ComparacaoRoute,
   RelatorioRoute: RelatorioRoute,
 }

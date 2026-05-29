@@ -3,13 +3,13 @@ import { Link, useLocation } from "@tanstack/react-router";
 
 const main = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/" },
-  { icon: BarChart3, label: "Análise", to: "/" },
+  { icon: BarChart3, label: "Análise", to: "/analise" },
   { icon: GitCompareArrows, label: "Comparação", to: "/comparacao" },
   { icon: FileText, label: "Relatório", to: "/relatorio" },
 ];
 const bottom = [
   { icon: HelpCircle, label: "Ajuda", to: "/" },
-  { icon: User, label: "Conta", to: "/" },
+  { icon: User, label: "Conta", to: "/auth" },
 ];
 
 export function Sidebar() {
