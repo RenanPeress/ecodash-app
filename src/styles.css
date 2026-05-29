@@ -152,6 +152,20 @@
 @layer base {
   * {
     border-color: var(--color-border);
+    cursor: default;
+  }
+
+  a, button, [role="button"], label, summary,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: pointer;
+  }
+
+  input, textarea, select, [contenteditable="true"] {
+    cursor: auto;
+  }
+
+  input[type="range"], input[type="file"], input[type="color"] {
+    cursor: pointer;
   }
 
   body {

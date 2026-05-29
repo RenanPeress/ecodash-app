@@ -39,12 +39,12 @@ export function LoginForm({ isLoading, onSubmit, onForgotPassword }: LoginFormPr
           name="email"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>Usuário ou E-mail</FormLabel>
               <FormControl>
                 <Input
-                  type="email"
-                  autoComplete="email"
-                  placeholder="seu@email.com"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="usuario ou email@exemplo.com"
                   disabled={isLoading}
                   className={cn(
                     fieldState.error && "border-destructive focus-visible:ring-destructive",

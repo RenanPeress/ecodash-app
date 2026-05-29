@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Cpu, Timer, MemoryStick } from "lucide-react";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
@@ -6,8 +6,12 @@ import { ScoreCard } from "@/components/dashboard/ScoreCard";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { MetricsChart } from "@/components/dashboard/MetricsChart";
 import { HistoryPanel } from "@/components/dashboard/HistoryPanel";
+import { isAuthenticated } from "@/lib/auth-token";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) throw redirect({ to: "/auth" });
+  },
   component: Dashboard,
   head: () => ({
     meta: [

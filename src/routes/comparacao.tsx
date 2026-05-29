@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { isAuthenticated } from "@/lib/auth-token";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { ComparisonHeader } from "@/components/comparison/ComparisonHeader";
@@ -16,6 +17,9 @@ import {
 } from "@/lib/version-comparison-utils";
 
 export const Route = createFileRoute("/comparacao")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) throw redirect({ to: "/auth" });
+  },
   component: ComparisonPage,
   head: () => ({
     meta: [

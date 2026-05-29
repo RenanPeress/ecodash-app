@@ -1,9 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { isAuthenticated } from "@/lib/auth-token";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { AnalysisInstructionsSection } from "@/components/analysis/AnalysisInstructionsSection";
 
 export const Route = createFileRoute("/analise")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) throw redirect({ to: "/auth" });
+  },
   component: AnalysisPage,
   head: () => ({
     meta: [

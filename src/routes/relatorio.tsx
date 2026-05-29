@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { isAuthenticated } from "@/lib/auth-token";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { OverviewCards, OverviewCardsSkeleton } from "@/components/report/OverviewCards";
@@ -7,11 +8,15 @@ import {
   ProcessingMetricsTableSkeleton,
 } from "@/components/report/ProcessingMetricsTable";
 import { ReportHeader } from "@/components/report/ReportHeader";
+import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import { useSustainabilityReport } from "@/hooks/use-sustainability-report";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/relatorio")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) throw redirect({ to: "/auth" });
+  },
   component: SustainabilityReportPage,
   head: () => ({
     meta: [
@@ -66,6 +71,9 @@ function SustainabilityReportPage() {
               <ProcessingMetricsTable metrics={processingMetrics} />
             </>
           ) : null}
+
+          {/* Insights gerados por IA — carrega de forma independente */}
+          <AIInsightsPanel />
         </main>
       </div>
     </div>
