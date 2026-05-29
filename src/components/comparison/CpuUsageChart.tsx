@@ -31,7 +31,7 @@ export function CpuUsageChart({ data, accentEfficient = false }: CpuUsageChartPr
       </p>
 
       <div className="mt-4 h-56 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" debounce={80}>
           <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
             <XAxis

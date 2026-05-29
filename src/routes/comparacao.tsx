@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { Topbar } from "@/components/dashboard/Topbar";
@@ -40,6 +40,9 @@ function ComparisonPage() {
   const [versionAId, setVersionAId] = useState(MOCK_SOFTWARE_VERSIONS[0].versionId);
   const [versionBId, setVersionBId] = useState(MOCK_SOFTWARE_VERSIONS[1].versionId);
 
+  const handleVersionAChange = useCallback((id: string) => setVersionAId(id), []);
+  const handleVersionBChange = useCallback((id: string) => setVersionBId(id), []);
+
   const versionA = getVersionById(versionAId)!;
   const versionB = getVersionById(versionBId)!;
 
@@ -60,7 +63,7 @@ function ComparisonPage() {
               selectedVersionId={versionAId}
               version={versionA}
               availableVersions={versionOptions}
-              onVersionChange={setVersionAId}
+              onVersionChange={handleVersionAChange}
               isMoreEfficient={efficiencyWinner === "a"}
               carbonIsBest={isBestCarbonCost(
                 versionA.carbonCostGco2eq,
@@ -78,7 +81,7 @@ function ComparisonPage() {
               selectedVersionId={versionBId}
               version={versionB}
               availableVersions={versionOptions}
-              onVersionChange={setVersionBId}
+              onVersionChange={handleVersionBChange}
               isMoreEfficient={efficiencyWinner === "b"}
               carbonIsBest={isBestCarbonCost(
                 versionB.carbonCostGco2eq,

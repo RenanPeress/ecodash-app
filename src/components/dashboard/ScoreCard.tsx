@@ -7,7 +7,7 @@ export function ScoreCard() {
       style={{ background: "var(--gradient-card)", boxShadow: "var(--shadow-soft)" }}
     >
       <div
-        className="absolute -top-20 -right-20 h-64 w-64 rounded-full opacity-30 blur-3xl"
+        className="absolute -top-20 -right-20 h-64 w-64 rounded-full opacity-20 blur-2xl"
         style={{ background: "var(--gradient-primary)" }}
       />
       <div className="relative flex flex-col md:flex-row gap-8 items-start md:items-center">

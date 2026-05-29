@@ -39,7 +39,7 @@ export function MemoryAllocationChart({
       </p>
 
       <div className="mt-4 h-56 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" debounce={80}>
           <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

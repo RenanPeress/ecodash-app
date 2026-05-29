@@ -15,7 +15,7 @@ const bottom = [
 export function Sidebar() {
   const { pathname } = useLocation();
   return (
-    <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 flex-col border-r border-border bg-card/60 backdrop-blur-sm z-20">
+    <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 flex-col border-r border-border bg-card z-20">
       <div className="flex items-center gap-2 px-6 h-16 border-b border-border">
         <div
           className="grid place-items-center h-9 w-9 rounded-xl text-primary-foreground shadow-[var(--shadow-glow)]"
