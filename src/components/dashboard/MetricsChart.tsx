@@ -39,7 +39,7 @@ export function MetricsChart() {
       </div>
 
       <div className="h-72 w-full">
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%" debounce={80}>
           <LineChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.02 145)" vertical={false} />
             <XAxis

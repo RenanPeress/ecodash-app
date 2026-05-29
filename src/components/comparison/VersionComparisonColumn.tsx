@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Cloud, Timer } from "lucide-react";
 import type { VersionComparisonColumnProps } from "@/types/version-comparison";
 import {
@@ -10,7 +11,7 @@ import { QuickMetricCard } from "./QuickMetricCard";
 import { CpuUsageChart } from "./CpuUsageChart";
 import { MemoryAllocationChart } from "./MemoryAllocationChart";
 
-export function VersionComparisonColumn({
+export const VersionComparisonColumn = memo(function VersionComparisonColumn({
   id,
   columnLabel,
   selectedVersionId,
@@ -61,4 +62,4 @@ export function VersionComparisonColumn({
       />
     </section>
   );
-}
+});

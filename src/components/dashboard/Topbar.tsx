@@ -2,7 +2,7 @@ import { Search, Bell, Settings } from "lucide-react";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-10 h-16 border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-10 h-16 border-b border-border bg-background">
       <div className="h-full px-6 flex items-center gap-4">
         <div className="flex-1 max-w-md relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
