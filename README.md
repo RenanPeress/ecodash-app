@@ -182,7 +182,7 @@ ANTHROPIC_API_KEY=sua-chave-anthropic
 
 ## 🚦 Como Executar o Projeto
 
-### Opção 1: Backend (Django)
+### Backend (Django)
 
 ```bash
 cd ecodash-server
@@ -207,7 +207,7 @@ python manage.py runserver
 
 ---
 
-### Opção 2: Frontend (React + Vite)
+### Frontend (React + Vite)
 
 ```bash
 cd ecodash-app
@@ -223,7 +223,7 @@ npm run dev
 
 ---
 
-### Opção 3: Docker (produção)
+### Docker (Backend em produção)
 
 ```bash
 # Build e execução da imagem do backend
