@@ -1,5 +1,5 @@
 import type { SoftwareVersion, SoftwareVersionOption } from "@/types/version-comparison";
-import { API_BASE_URL } from "./client";
+import { API_BASE_URL, parseErrorMessage } from "./client";
 
 /** Catálogo simulado — substituir por GET /api/versions quando o back-end estiver disponível */
 export const MOCK_SOFTWARE_VERSIONS: SoftwareVersion[] = [
@@ -97,7 +97,8 @@ export function getVersionById(versionId: string): SoftwareVersion | undefined {
 export async function fetchVersionById(versionId: string): Promise<SoftwareVersion> {
   const response = await fetch(`${API_BASE_URL}/api/versions/${versionId}`);
   if (!response.ok) {
-    throw new Error(`Erro ao buscar versão: ${response.status}`);
+    const text = await response.text().catch(() => "");
+    throw new Error(parseErrorMessage(text, response.status));
   }
   return response.json() as Promise<SoftwareVersion>;
 }

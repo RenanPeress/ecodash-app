@@ -3,7 +3,7 @@ import type {
   StartAnalysisPayload,
   StartAnalysisResponse,
 } from "@/types/code-analysis";
-import { API_BASE_URL } from "./client";
+import { API_BASE_URL, parseErrorMessage } from "./client";
 
 const API_BASE = `${API_BASE_URL}/api`;
 
@@ -18,7 +18,8 @@ export async function startCodeAnalysis(
   });
 
   if (!response.ok) {
-    throw new Error(`Erro ao iniciar análise: ${response.status} ${response.statusText}`);
+    const text = await response.text().catch(() => "");
+    throw new Error(parseErrorMessage(text, response.status));
   }
 
   return response.json() as Promise<StartAnalysisResponse>;
@@ -38,7 +39,7 @@ export async function startCodeAnalysisMock(
 }
 
 export const ANALYSIS_INSTRUCTIONS: AnalysisInstructionsContent = {
-  documentationUrl: "https://docs.ecodash.app/sci-client",
+  documentationUrl: "/INSTALACAO_SCI_Client.pdf",
   prerequisites: [
     {
       description: "Verifique se o Python 3 está instalado:",

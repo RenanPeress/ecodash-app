@@ -39,7 +39,7 @@ export function TerminalCodeBlock({ command, className }: TerminalCodeBlockProps
       >
         {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <ClipboardCopy className="h-3.5 w-3.5" />}
       </button>
-      <pre className="overflow-x-auto p-4 pr-12 font-mono text-sm leading-relaxed text-slate-200">
+      <pre className="overflow-x-auto p-3 pr-12 font-mono text-xs leading-relaxed text-slate-200 sm:p-4 sm:text-sm">
         <code>{command}</code>
       </pre>
     </div>

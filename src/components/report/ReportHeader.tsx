@@ -25,8 +25,8 @@ export function ReportHeader({
   return (
     <header className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="font-display text-3xl font-semibold tracking-tight">
+        <div className="min-w-0 space-y-1">
+          <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
             Relatório de Sustentabilidade
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -35,7 +35,7 @@ export function ReportHeader({
         </div>
 
         <Button
-          className="gap-2 shrink-0 shadow-[var(--shadow-glow)]"
+          className="w-full shrink-0 gap-2 shadow-[var(--shadow-glow)] sm:w-auto"
           style={{ background: "var(--gradient-primary)" }}
           onClick={onExport}
           disabled={isLoading || isExporting || !analysisDate}
@@ -46,11 +46,13 @@ export function ReportHeader({
       </div>
 
       {isLoading ? (
-        <Skeleton className="h-4 w-72" />
+        <Skeleton className="h-4 w-full max-w-xs sm:w-72" />
       ) : analysisDate ? (
-        <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarClock className="h-4 w-4" />
-          Análise realizada em:{" "}
+        <p className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-2">
+          <span className="inline-flex items-center gap-2">
+            <CalendarClock className="h-4 w-4 shrink-0" />
+            Análise realizada em:
+          </span>
           <span className="font-medium text-foreground">{formatAnalysisDate(analysisDate)}</span>
         </p>
       ) : null}

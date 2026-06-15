@@ -28,17 +28,17 @@ export function MemoryAllocationChart({
 
   return (
     <div
-      className="rounded-2xl border border-border bg-card p-5"
+      className="rounded-2xl border border-border bg-card p-4 sm:p-5"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
-      <h3 className="font-display text-base font-semibold tracking-tight">
+      <h3 className="font-display text-sm font-semibold tracking-tight sm:text-base">
         Alocação de Memória ao Longo do Tempo
       </h3>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Eixo X: tempo · Eixo Y: memória RAM (MB)
       </p>
 
-      <div className="mt-4 h-56 w-full">
+      <div className="mt-4 h-48 w-full min-w-0 sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
             <defs>

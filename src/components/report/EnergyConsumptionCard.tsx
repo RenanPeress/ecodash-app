@@ -24,7 +24,7 @@ export function EnergyConsumptionCard({ valueKwh }: EnergyConsumptionCardProps) 
       </CardHeader>
       <CardContent>
         <div className="flex items-baseline gap-2">
-          <span className="font-display text-4xl font-semibold tracking-tight">
+          <span className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
             {valueKwh.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
           </span>
           <span className="text-sm font-medium text-muted-foreground">kWh</span>

@@ -1,11 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Cpu, Timer, MemoryStick } from "lucide-react";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { Cpu, Timer, MemoryStick, AlertTriangle } from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ScoreCard } from "@/components/dashboard/ScoreCard";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { MetricsChart } from "@/components/dashboard/MetricsChart";
 import { HistoryPanel } from "@/components/dashboard/HistoryPanel";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useDashboard } from "@/hooks/use-dashboard";
 import { isAuthenticated } from "@/lib/auth-token";
 
 export const Route = createFileRoute("/")({
@@ -25,52 +26,68 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-function Dashboard() {
-  return (
-    <div className="min-h-screen bg-background font-sans">
-      <Sidebar />
-      <div className="md:ml-64">
-        <Topbar />
-        <main className="p-6 lg:p-8 space-y-6">
-          <ScoreCard />
+/** Formata um número com casas decimais, ou "—" quando indisponível. */
+function fmt(value: number | undefined, suffix: string, digits = 0): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  return `${value.toFixed(digits)}${suffix}`;
+}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+function Dashboard() {
+  const { summary, analyses, lastAnalysis, lastDetail, isLoading, error } = useDashboard();
+  const metrics = lastDetail?.metrics;
+
+  return (
+    <DashboardLayout>
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Erro ao carregar o dashboard</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {isLoading ? (
+        <div className="space-y-4 sm:space-y-6">
+          <div className="h-44 animate-pulse rounded-3xl bg-muted/60" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
+            <div className="h-36 animate-pulse rounded-2xl bg-muted/60" />
+            <div className="h-36 animate-pulse rounded-2xl bg-muted/60" />
+            <div className="h-36 animate-pulse rounded-2xl bg-muted/60" />
+          </div>
+          <div className="h-72 animate-pulse rounded-2xl bg-muted/60" />
+        </div>
+      ) : (
+        <>
+          <ScoreCard lastAnalysis={lastAnalysis} summary={summary} />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
             <MetricCard
               icon={Cpu}
               label="Uso de CPU"
-              value="14.2%"
-              delta="-2.4%"
-              trend="down"
-              positive
+              value={fmt(metrics?.cpu_percent_avg, "%", 1)}
             />
             <MetricCard
               icon={Timer}
               label="Tempo de Execução"
-              value="0.84s"
-              delta="-0.12s"
-              trend="down"
-              positive
+              value={fmt(metrics?.duration_seconds, "s", 2)}
             />
             <MetricCard
               icon={MemoryStick}
               label="Uso de Memória"
-              value="128MB"
-              delta="-8MB"
-              trend="down"
-              positive
+              value={fmt(metrics?.memory_used_mb_avg, "MB", 0)}
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
             <div className="lg:col-span-2">
-              <MetricsChart />
+              <MetricsChart analyses={analyses} />
             </div>
             <div>
-              <HistoryPanel />
+              <HistoryPanel analyses={analyses} />
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+        </>
+      )}
+    </DashboardLayout>
   );
 }

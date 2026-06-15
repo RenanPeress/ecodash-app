@@ -22,15 +22,15 @@ export function CpuUsageChart({ data, accentEfficient = false }: CpuUsageChartPr
 
   return (
     <div
-      className="rounded-2xl border border-border bg-card p-5"
+      className="rounded-2xl border border-border bg-card p-4 sm:p-5"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
-      <h3 className="font-display text-base font-semibold tracking-tight">Uso de CPU</h3>
+      <h3 className="font-display text-sm font-semibold tracking-tight sm:text-base">Uso de CPU</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Consumo por núcleo e picos de processamento (%)
       </p>
 
-      <div className="mt-4 h-56 w-full">
+      <div className="mt-4 h-48 w-full min-w-0 sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />

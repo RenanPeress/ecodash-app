@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { isAuthenticated } from "@/lib/auth-token";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { AnalysisInstructionsSection } from "@/components/analysis/AnalysisInstructionsSection";
 
 export const Route = createFileRoute("/analise")({
@@ -28,14 +27,8 @@ export const Route = createFileRoute("/analise")({
 
 function AnalysisPage() {
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <Sidebar />
-      <div className="md:ml-64">
-        <Topbar />
-        <main className="p-6 lg:p-8">
-          <AnalysisInstructionsSection />
-        </main>
-      </div>
-    </div>
+    <DashboardLayout>
+      <AnalysisInstructionsSection />
+    </DashboardLayout>
   );
 }

@@ -1,6 +1,6 @@
 import type { AuthResponse, LoginCredentials, RegisterUserData } from "@/types/auth";
 import { saveTokens } from "@/lib/auth-token";
-import { API_BASE_URL } from "./client";
+import { API_BASE_URL, parseErrorMessage } from "./client";
 
 interface BackendAuthResponse {
   id: number;
@@ -11,14 +11,8 @@ interface BackendAuthResponse {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    try {
-      const json = JSON.parse(text) as Record<string, unknown>;
-      const msg = json.error ?? json.detail ?? json.non_field_errors ?? Object.values(json)[0];
-      throw new Error(String(msg));
-    } catch {
-      throw new Error(text || `Erro ${res.status}`);
-    }
+    const text = await res.text().catch(() => "");
+    throw new Error(parseErrorMessage(text, res.status));
   }
   return res.json() as Promise<T>;
 }

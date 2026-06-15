@@ -1,53 +1,72 @@
-const builds = [
-  { id: "#2481", time: "há 2 min", grade: "A", branch: "main" },
-  { id: "#2480", time: "há 1 h", grade: "A", branch: "feat/cache" },
-  { id: "#2479", time: "há 3 h", grade: "B", branch: "main" },
-  { id: "#2478", time: "ontem", grade: "A", branch: "fix/loop" },
-  { id: "#2477", time: "ontem", grade: "C", branch: "experiment" },
-  { id: "#2476", time: "2d", grade: "B", branch: "main" },
-];
+import { useNavigate } from "@tanstack/react-router";
+import type { AnaliseItem } from "@/lib/api/dashboard";
+import { formatRelativeTime } from "@/lib/datetime";
+
+interface HistoryPanelProps {
+  analyses: AnaliseItem[];
+}
 
 const gradeStyles: Record<string, string> = {
+  AAA: "bg-primary/10 text-primary",
+  AA: "bg-primary/10 text-primary",
   A: "bg-primary/10 text-primary",
   B: "bg-[oklch(0.78_0.16_75/0.15)] text-[oklch(0.55_0.16_75)]",
   C: "bg-destructive/10 text-destructive",
+  D: "bg-destructive/10 text-destructive",
 };
 
-export function HistoryPanel() {
+export function HistoryPanel({ analyses }: HistoryPanelProps) {
+  const navigate = useNavigate();
+  const recent = analyses.slice(0, 6);
+
   return (
     <div
-      className="rounded-2xl border border-border bg-card p-6 h-full"
+      className="h-full rounded-2xl border border-border bg-card p-4 sm:p-6"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
       <div className="flex items-center justify-between mb-5">
         <div>
           <h2 className="font-display text-lg font-semibold tracking-tight">Histórico Recente</h2>
-          <p className="text-xs text-muted-foreground">Últimas execuções</p>
+          <p className="text-xs text-muted-foreground">Últimas análises</p>
         </div>
-        <button className="text-xs font-medium text-primary hover:underline">Ver tudo</button>
+        <button
+          type="button"
+          onClick={() => void navigate({ to: "/relatorio" })}
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          Ver tudo
+        </button>
       </div>
 
-      <ul className="space-y-2">
-        {builds.map((b) => (
-          <li
-            key={b.id}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition cursor-pointer"
-          >
-            <div
-              className={`h-10 w-10 rounded-xl grid place-items-center font-display font-semibold ${
-                gradeStyles[b.grade]
-              }`}
+      {recent.length === 0 ? (
+        <div className="grid place-items-center py-10 text-center text-sm text-muted-foreground">
+          Nenhuma análise registrada ainda.
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {recent.map((a) => (
+            <li
+              key={a.id}
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/40 transition cursor-pointer"
             >
-              {b.grade}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Build {b.id}</p>
-              <p className="text-xs text-muted-foreground truncate">{b.branch}</p>
-            </div>
-            <span className="text-xs text-muted-foreground">{b.time}</span>
-          </li>
-        ))}
-      </ul>
+              <div
+                className={`h-10 w-10 rounded-xl grid place-items-center font-display text-sm font-semibold ${
+                  gradeStyles[a.grade] ?? "bg-muted text-muted-foreground"
+                }`}
+              >
+                {a.grade}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{a.software_name}</p>
+                <p className="text-xs text-muted-foreground truncate">{a.region}</p>
+              </div>
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {formatRelativeTime(a.created_at)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

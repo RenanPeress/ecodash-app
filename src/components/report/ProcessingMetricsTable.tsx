@@ -27,7 +27,8 @@ const statusConfig: Record<
   alert: {
     label: "Alerta",
     icon: AlertTriangle,
-    className: "border-[oklch(0.78_0.16_75/0.3)] bg-[oklch(0.96_0.05_85)] text-[oklch(0.45_0.14_75)] dark:bg-[oklch(0.35_0.08_75)] dark:text-[oklch(0.85_0.12_85)]",
+    className:
+      "border-[oklch(0.78_0.16_75/0.3)] bg-[oklch(0.96_0.05_85)] text-[oklch(0.45_0.14_75)] dark:bg-[oklch(0.35_0.08_75)] dark:text-[oklch(0.85_0.12_85)]",
   },
   critical: {
     label: "Crítico",
@@ -54,11 +55,44 @@ function StatusBadge({ status }: { status: ProcessingStatus }) {
 }
 
 function formatPeakDemand(value: number, unit: string): string {
-  const formatted =
-    unit === "%"
-      ? `${value.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`
-      : `${value.toLocaleString("pt-BR")} ${unit}`;
-  return formatted;
+  return unit === "%"
+    ? `${value.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`
+    : `${value.toLocaleString("pt-BR")} ${unit}`;
+}
+
+function MetricMobileCard({ metric }: { metric: ProcessingMetric }) {
+  return (
+    <article className="rounded-xl border border-border bg-background p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-medium text-foreground">{metric.resource}</h3>
+        <StatusBadge status={metric.status} />
+      </div>
+      <dl className="grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <dt className="text-xs text-muted-foreground">Utilização média</dt>
+          <dd className="mt-0.5 font-medium">
+            {metric.averageUtilizationPercent.toLocaleString("pt-BR", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            })}
+            %
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs text-muted-foreground">Pico de demanda</dt>
+          <dd className="mt-0.5 font-medium">
+            {formatPeakDemand(metric.peakDemandValue, metric.peakDemandUnit)}
+          </dd>
+        </div>
+        <div className="col-span-2">
+          <dt className="text-xs text-muted-foreground">Pegada de carbono</dt>
+          <dd className="mt-0.5 font-medium">
+            {metric.carbonFootprintGco2eq.toLocaleString("pt-BR")} gCO₂eq
+          </dd>
+        </div>
+      </dl>
+    </article>
+  );
 }
 
 export function ProcessingMetricsTable({ metrics }: ProcessingMetricsTableProps) {
@@ -68,16 +102,24 @@ export function ProcessingMetricsTable({ metrics }: ProcessingMetricsTableProps)
       className="overflow-hidden rounded-2xl border border-border bg-card"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
-      <div className="border-b border-border px-6 py-5">
-        <h2 className="font-display text-lg font-semibold tracking-tight">
+      <div className="border-b border-border px-4 py-4 sm:px-6 sm:py-5">
+        <h2 className="font-display text-base font-semibold tracking-tight sm:text-lg">
           Métricas de Processamento Bruto
         </h2>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
           Utilização média, picos de demanda e pegada de carbono por recurso do sistema.
         </p>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile: cards */}
+      <div className="space-y-3 p-4 md:hidden">
+        {metrics.map((metric) => (
+          <MetricMobileCard key={metric.id} metric={metric} />
+        ))}
+      </div>
+
+      {/* Desktop: tabela */}
+      <div className="hidden overflow-x-auto md:block">
         <Table>
           <TableHeader>
             <TableRow className="bg-primary/5 hover:bg-primary/5">
@@ -136,11 +178,16 @@ export function ProcessingMetricsTableSkeleton() {
       className="overflow-hidden rounded-2xl border border-border bg-card"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
-      <div className="border-b border-border px-6 py-5 space-y-2">
-        <Skeleton className="h-6 w-64" />
-        <Skeleton className="h-4 w-96 max-w-full" />
+      <div className="space-y-2 border-b border-border px-4 py-4 sm:px-6 sm:py-5">
+        <Skeleton className="h-6 w-full max-w-xs sm:w-64" />
+        <Skeleton className="h-4 w-full max-w-md" />
       </div>
-      <div className="p-6 space-y-4">
+      <div className="space-y-3 p-4 md:hidden">
+        {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
+          <Skeleton key={index} className="h-32 w-full rounded-xl" />
+        ))}
+      </div>
+      <div className="hidden space-y-4 p-6 md:block">
         <Skeleton className="h-8 w-full" />
         {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
           <Skeleton key={index} className="h-12 w-full" />

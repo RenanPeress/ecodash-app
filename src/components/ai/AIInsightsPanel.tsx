@@ -123,21 +123,26 @@ export function AIInsightsPanel() {
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-border px-6 py-5">
-        <div className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-primary">
-          <Bot className="h-5 w-5" />
+      <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:gap-3 sm:px-6 sm:py-5">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Bot className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-display text-base font-semibold tracking-tight sm:text-lg">
+              Insights por IA
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Análise e recomendações geradas pelo EcoDash Assistant
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="font-display text-lg font-semibold tracking-tight">Insights por IA</h2>
-          <p className="text-xs text-muted-foreground">
-            Análise e recomendações geradas pelo EcoDash Assistant
-          </p>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
           {isAnyLoading && (
             <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Processando com Claude Opus...
+              <span className="hidden sm:inline">Processando com Claude Opus...</span>
+              <span className="sm:hidden">Processando...</span>
             </span>
           )}
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
@@ -147,7 +152,7 @@ export function AIInsightsPanel() {
         </div>
       </div>
 
-      <div className="px-6 py-5 space-y-6">
+      <div className="space-y-6 px-4 py-4 sm:px-6 sm:py-5">
         {/* Idle — show trigger button */}
         {!triggered && <IdlePrompt onGenerate={generate} />}
 

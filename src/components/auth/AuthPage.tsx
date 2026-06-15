@@ -3,6 +3,7 @@ import { Leaf } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthActions } from "@/hooks/use-auth-actions";
 import type { AuthMode } from "@/types/auth";
+import { ThemeToggleButton } from "@/components/theme/ThemeToggleButton";
 import { AuthBrandingPanel } from "./AuthBrandingPanel";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
@@ -17,12 +18,16 @@ export function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="relative flex min-h-screen bg-background">
+      <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+        <ThemeToggleButton />
+      </div>
+
       <AuthBrandingPanel />
 
-      <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16">
+      <div className="flex w-full flex-col justify-center px-4 py-8 sm:px-6 sm:py-12 lg:w-1/2 lg:px-16">
         <div className="mx-auto w-full max-w-md">
-          <div className="mb-8 flex items-center gap-2 lg:hidden">
+          <div className="mb-6 flex items-center gap-2 sm:mb-8 lg:hidden">
             <div
               className="grid h-10 w-10 place-items-center rounded-xl text-primary-foreground"
               style={{ background: "var(--gradient-primary)" }}
@@ -33,7 +38,7 @@ export function AuthPage() {
           </div>
 
           <div
-            className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-soft)] sm:p-8"
+            className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)] sm:p-6 md:p-8"
             key={mode}
           >
             <div className="mb-6">

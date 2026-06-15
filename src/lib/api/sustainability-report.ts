@@ -4,13 +4,14 @@ import type {
   MetricsSummaryResponse,
   ProcessingMetric,
 } from "@/types/sustainability-report";
-import { API_BASE_URL } from "./client";
+import { API_BASE_URL, parseErrorMessage } from "./client";
 
 const API_BASE = `${API_BASE_URL}/api`;
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+    const text = await response.text().catch(() => "");
+    throw new Error(parseErrorMessage(text, response.status));
   }
   return response.json() as Promise<T>;
 }

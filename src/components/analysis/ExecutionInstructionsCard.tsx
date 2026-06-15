@@ -13,21 +13,21 @@ export function ExecutionInstructionsCard({ content }: ExecutionInstructionsCard
       className="rounded-2xl border border-border bg-card"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
-      <div className="border-b border-border px-6 py-5">
-        <h2 className="font-display text-xl font-semibold tracking-tight">
+      <div className="border-b border-border px-4 py-4 sm:px-6 sm:py-5">
+        <h2 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
           Instruções de Execução
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
           Configure o SCI Client localmente antes de iniciar a análise na plataforma.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 px-6 py-6 lg:grid-cols-2 lg:gap-10">
+      <div className="grid grid-cols-1 gap-6 px-4 py-4 sm:gap-8 sm:px-6 sm:py-6 lg:grid-cols-2 lg:gap-10">
         <PrerequisitesSection items={content.prerequisites} />
         <InstallationStepsSection steps={content.installationSteps} />
       </div>
 
-      <footer className="border-t border-border px-6 py-4">
+      <footer className="border-t border-border px-4 py-4 sm:px-6">
         <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <HelpCircle className="h-4 w-4 shrink-0" />
           <a

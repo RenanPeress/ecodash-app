@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { isAuthenticated } from "@/lib/auth-token";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { ComparisonHeader } from "@/components/comparison/ComparisonHeader";
 import { VersionComparisonColumn } from "@/components/comparison/VersionComparisonColumn";
 import {
@@ -50,14 +49,10 @@ function ComparisonPage() {
   const efficiencyWinner = resolveMoreEfficientVersion(versionA, versionB);
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <Sidebar />
-      <div className="md:ml-64">
-        <Topbar />
-        <main className="p-6 lg:p-8">
-          <ComparisonHeader />
+    <DashboardLayout>
+      <ComparisonHeader />
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 xl:gap-8">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-8">
             <VersionComparisonColumn
               id="version-a"
               columnLabel="Versão A"
@@ -93,9 +88,7 @@ function ComparisonPage() {
                 versionA.executionTimeMs,
               )}
             />
-          </div>
-        </main>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

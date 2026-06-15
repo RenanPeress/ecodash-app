@@ -203,7 +203,7 @@ export function ChatWidget() {
   if (!authed) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {open && <ChatPanel onClose={() => setOpen(false)} />}
 
       <button
@@ -211,7 +211,7 @@ export function ChatWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Fechar chat IA" : "Abrir chat IA"}
         className={cn(
-          "h-14 w-14 rounded-2xl grid place-items-center transition-all duration-200",
+          "grid h-12 w-12 place-items-center rounded-2xl transition-all duration-200 sm:h-14 sm:w-14",
           "focus:outline-none focus:ring-4 focus:ring-primary/30",
           open
             ? "bg-muted text-foreground shadow-md"
@@ -219,7 +219,7 @@ export function ChatWidget() {
         )}
         style={open ? {} : { background: "var(--gradient-primary)", boxShadow: "var(--shadow-glow)" }}
       >
-        {open ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
+        {open ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Bot className="h-5 w-5 sm:h-6 sm:w-6" />}
       </button>
     </div>
   );

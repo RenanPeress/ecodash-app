@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { isAuthenticated } from "@/lib/auth-token";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Topbar } from "@/components/dashboard/Topbar";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { OverviewCards, OverviewCardsSkeleton } from "@/components/report/OverviewCards";
 import {
   ProcessingMetricsTable,
@@ -40,12 +39,8 @@ function SustainabilityReportPage() {
     useSustainabilityReport();
 
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <Sidebar />
-      <div className="md:ml-64">
-        <Topbar />
-        <main className="space-y-6 p-6 lg:space-y-8 lg:p-8">
-          <ReportHeader
+    <DashboardLayout mainClassName="space-y-4 p-4 sm:space-y-6 sm:p-6 lg:space-y-8 lg:p-8">
+      <ReportHeader
             analysisDate={summary?.analysisDate ?? null}
             isLoading={isLoading}
             isExporting={isExporting}
@@ -73,9 +68,7 @@ function SustainabilityReportPage() {
           ) : null}
 
           {/* Insights gerados por IA — carrega de forma independente */}
-          <AIInsightsPanel />
-        </main>
-      </div>
-    </div>
+      <AIInsightsPanel />
+    </DashboardLayout>
   );
 }
