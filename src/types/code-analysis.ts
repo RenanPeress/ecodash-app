@@ -15,6 +15,8 @@ export interface InstallationStep {
   title: string;
   description: string;
   command: string;
+  downloadUrl?: string;
+  downloadFilename?: string;
 }
 
 export interface PrerequisiteBlock {

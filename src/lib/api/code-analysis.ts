@@ -52,8 +52,10 @@ export const ANALYSIS_INSTRUCTIONS: AnalysisInstructionsContent = {
     {
       step: 1,
       title: "Baixar o script",
-      description: "Salve o arquivo `user_sci_client.py` e mova para a pasta home:",
-      command: "mv ~/Downloads/user_sci_client.py ~/",
+      description: "Baixe o script e mova para a pasta home:",
+      command: "mv ~/Downloads/ecodash-collector.py ~/",
+      downloadUrl: "/api/collector/download/",
+      downloadFilename: "ecodash-collector.py",
     },
     {
       step: 2,
