@@ -55,12 +55,12 @@ export function ExecutionInstructionsCard({ content }: ExecutionInstructionsCard
         </div>
       </div>
 
-      <div className="px-4 py-4 sm:px-6 sm:py-6">
+      <div className="space-y-8 px-4 py-4 sm:px-6 sm:py-6">
         {platform === "linux" ? (
-          <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-10">
+          <>
             <PrerequisitesSection items={content.prerequisites} />
             <InstallationStepsSection steps={content.installationSteps} />
-          </div>
+          </>
         ) : (
           <WindowsCollectorCard />
         )}
