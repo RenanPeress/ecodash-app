@@ -42,6 +42,8 @@ function ComparisonPage() {
     versionAId,
     versionBId,
     isLoading,
+    isLoadingA,
+    isLoadingB,
     error,
     setVersionAId,
     setVersionBId,
@@ -76,45 +78,49 @@ function ComparisonPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-8">
-          <VersionComparisonColumn
-            id="version-a"
-            columnLabel="Versão A"
-            selectedVersionId={versionAId}
-            version={versionA ?? options[0] as never}
-            availableVersions={options}
-            onVersionChange={setVersionAId}
-            isMoreEfficient={efficiencyWinner === "a"}
-            carbonIsBest={
-              versionA && versionB
-                ? isBestCarbonCost(versionA.carbonCostGco2eq, versionB.carbonCostGco2eq)
-                : false
-            }
-            executionIsBest={
-              versionA && versionB
-                ? isBestExecutionTime(versionA.executionTimeMs, versionB.executionTimeMs)
-                : false
-            }
-          />
+          {isLoadingA || !versionA ? (
+            <div className="flex items-center justify-center rounded-2xl border border-border bg-card py-20">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <VersionComparisonColumn
+              id="version-a"
+              columnLabel="Versão A"
+              selectedVersionId={versionAId}
+              version={versionA}
+              availableVersions={options}
+              onVersionChange={setVersionAId}
+              isMoreEfficient={efficiencyWinner === "a"}
+              carbonIsBest={
+                versionB ? isBestCarbonCost(versionA.carbonCostGco2eq, versionB.carbonCostGco2eq) : false
+              }
+              executionIsBest={
+                versionB ? isBestExecutionTime(versionA.executionTimeMs, versionB.executionTimeMs) : false
+              }
+            />
+          )}
 
-          <VersionComparisonColumn
-            id="version-b"
-            columnLabel="Versão B"
-            selectedVersionId={versionBId}
-            version={versionB ?? options[1] as never}
-            availableVersions={options}
-            onVersionChange={setVersionBId}
-            isMoreEfficient={efficiencyWinner === "b"}
-            carbonIsBest={
-              versionA && versionB
-                ? isBestCarbonCost(versionB.carbonCostGco2eq, versionA.carbonCostGco2eq)
-                : false
-            }
-            executionIsBest={
-              versionA && versionB
-                ? isBestExecutionTime(versionB.executionTimeMs, versionA.executionTimeMs)
-                : false
-            }
-          />
+          {isLoadingB || !versionB ? (
+            <div className="flex items-center justify-center rounded-2xl border border-border bg-card py-20">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <VersionComparisonColumn
+              id="version-b"
+              columnLabel="Versão B"
+              selectedVersionId={versionBId}
+              version={versionB}
+              availableVersions={options}
+              onVersionChange={setVersionBId}
+              isMoreEfficient={efficiencyWinner === "b"}
+              carbonIsBest={
+                versionA ? isBestCarbonCost(versionB.carbonCostGco2eq, versionA.carbonCostGco2eq) : false
+              }
+              executionIsBest={
+                versionA ? isBestExecutionTime(versionB.executionTimeMs, versionA.executionTimeMs) : false
+              }
+            />
+          )}
         </div>
       )}
     </DashboardLayout>
