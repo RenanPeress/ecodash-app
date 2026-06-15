@@ -3,8 +3,9 @@ import type {
   StartAnalysisPayload,
   StartAnalysisResponse,
 } from "@/types/code-analysis";
+import { API_BASE_URL } from "./client";
 
-const API_BASE = "/api";
+const API_BASE = `${API_BASE_URL}/api`;
 
 /** POST /api/analysis/start — inicia a análise de código no back-end */
 export async function startCodeAnalysis(
@@ -54,7 +55,7 @@ export const ANALYSIS_INSTRUCTIONS: AnalysisInstructionsContent = {
       title: "Baixar o script",
       description: "Baixe o script e mova para a pasta home:",
       command: "mv ~/Downloads/ecodash-collector.py ~/",
-      downloadUrl: "/api/collector/download/",
+      downloadUrl: `${API_BASE_URL}/api/collector/download/`,
       downloadFilename: "ecodash-collector.py",
     },
     {

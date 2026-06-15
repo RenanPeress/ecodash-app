@@ -1,5 +1,6 @@
 import type { AuthResponse, LoginCredentials, RegisterUserData } from "@/types/auth";
 import { saveTokens } from "@/lib/auth-token";
+import { API_BASE_URL } from "./client";
 
 interface BackendAuthResponse {
   id: number;
@@ -32,7 +33,7 @@ function mapBackend(data: BackendAuthResponse, email: string): AuthResponse {
 
 /** POST /api/auth/login/ */
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
-  const res = await fetch("/api/auth/login/", {
+  const res = await fetch(`${API_BASE_URL}/api/auth/login/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: credentials.email, password: credentials.password }),
@@ -43,7 +44,7 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
 
 /** POST /api/auth/signup/ */
 export async function registerUser(data: RegisterUserData): Promise<AuthResponse> {
-  const res = await fetch("/api/auth/signup/", {
+  const res = await fetch(`${API_BASE_URL}/api/auth/signup/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: data.email, email: data.email, password: data.password }),

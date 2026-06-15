@@ -1,5 +1,7 @@
 import { getAuthToken } from "@/lib/auth-token";
 
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
+
 export function authHeaders(extra?: HeadersInit): HeadersInit {
   const token = getAuthToken();
   return {
@@ -10,7 +12,7 @@ export function authHeaders(extra?: HeadersInit): HeadersInit {
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: authHeaders(init?.headers),
   });

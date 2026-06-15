@@ -4,8 +4,9 @@ import type {
   MetricsSummaryResponse,
   ProcessingMetric,
 } from "@/types/sustainability-report";
+import { API_BASE_URL } from "./client";
 
-const API_BASE = "/api";
+const API_BASE = `${API_BASE_URL}/api`;
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
