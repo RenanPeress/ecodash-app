@@ -3,9 +3,11 @@ import type {
   ExportReportResponse,
   MetricsSummaryResponse,
   ProcessingMetric,
+  ProcessingStatus,
 } from "@/types/sustainability-report";
 import { API_BASE_URL, parseErrorMessage } from "./client";
 import { getAuthToken } from "@/lib/auth-token";
+import type { AnaliseDetail } from "./dashboard";
 
 const API_BASE = `${API_BASE_URL}/api`;
 
@@ -54,7 +56,92 @@ export async function exportAnalysisPDF(pk: number): Promise<Blob> {
   return response.blob();
 }
 
-/** Dados simulados — substituir pelas funções acima quando o back-end estiver disponível */
+// ── Mappers: AnaliseDetail → tipos da tela de Relatório ──────────────────────
+
+const GRADE_EFFICIENCY: Record<string, number> = {
+  AAA: 97, AA: 90, A: 75, B: 55, C: 30, D: 10,
+};
+
+export function mapAnaliseToSummary(a: AnaliseDetail): MetricsSummaryResponse {
+  const efficiency = GRADE_EFFICIENCY[a.grade] ?? 50;
+  const isGreen = ["AAA", "AA", "A"].includes(a.grade);
+  return {
+    analysisDate: a.created_at,
+    energyConsumptionKwh: a.energy_kwh,
+    efficiency: {
+      achieved: efficiency,
+      maximum: 100,
+      level: isGreen ? "high" : "low",
+    },
+    sustainability: {
+      classification: isGreen ? "green-software" : "needs-optimization",
+      label: isGreen ? "Green Software" : "Requer Otimização",
+      description: isGreen
+        ? "Software classificado dentro dos padrões de eficiência ambiental."
+        : "Software com impacto ambiental acima do recomendado.",
+    },
+  };
+}
+
+function cpuStatus(avg: number): ProcessingStatus {
+  if (avg < 30) return "optimized";
+  if (avg < 70) return "alert";
+  return "critical";
+}
+
+export function mapAnaliseToProcessingMetrics(a: AnaliseDetail): ProcessingMetric[] {
+  const m = a.metrics;
+  if (!m) return [];
+
+  const sciTotal = a.sci_score;
+  const cpuWeight = m.cpu_percent_avg;
+  const memWeight = m.memory_used_mb_avg / 10;
+  const ioWeight = (m.io_read_mb + m.io_write_mb) * 5;
+  const totalWeight = cpuWeight + memWeight + ioWeight || 1;
+
+  const cpuGco2 = Math.round((sciTotal * cpuWeight) / totalWeight * 1000);
+  const memGco2 = Math.round((sciTotal * memWeight) / totalWeight * 1000);
+  const ioGco2 = Math.round((sciTotal * ioWeight) / totalWeight * 1000);
+
+  const metrics: ProcessingMetric[] = [
+    {
+      id: "cpu",
+      resource: "CPU",
+      averageUtilizationPercent: m.cpu_percent_avg,
+      peakDemandValue: m.cpu_percent_peak,
+      peakDemandUnit: "%",
+      carbonFootprintGco2eq: cpuGco2,
+      status: cpuStatus(m.cpu_percent_avg),
+    },
+    {
+      id: "memory",
+      resource: "Memória",
+      averageUtilizationPercent: Math.min(m.memory_used_mb_avg, 100),
+      peakDemandValue: m.memory_used_mb_peak,
+      peakDemandUnit: "MB",
+      carbonFootprintGco2eq: memGco2,
+      status: cpuStatus(m.memory_used_mb_avg / (m.memory_used_mb_peak || 1) * 100),
+    },
+  ];
+
+  if (m.io_read_mb + m.io_write_mb > 0) {
+    metrics.push({
+      id: "io",
+      resource: "I/O de Disco",
+      averageUtilizationPercent: Math.min((m.io_read_mb + m.io_write_mb) * 2, 100),
+      peakDemandValue: Math.round((m.io_read_mb + m.io_write_mb) * 100) / 100,
+      peakDemandUnit: "MB",
+      carbonFootprintGco2eq: ioGco2,
+      status: ioGco2 > 50 ? "alert" : "optimized",
+    });
+  }
+
+  return metrics;
+}
+
+// ── Mock data (mantido apenas como fallback de desenvolvimento) ───────────────
+
+/** Dados simulados — mantidos apenas para referência */
 export const MOCK_SUMMARY: MetricsSummaryResponse = {
   analysisDate: "2026-05-29T14:32:00.000Z",
   energyConsumptionKwh: 142.8,

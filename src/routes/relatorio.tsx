@@ -10,7 +10,7 @@ import { ReportHeader } from "@/components/report/ReportHeader";
 import { AIInsightsPanel } from "@/components/ai/AIInsightsPanel";
 import { useSustainabilityReport } from "@/hooks/use-sustainability-report";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/relatorio")({
   beforeLoad: () => {
@@ -65,6 +65,14 @@ function SustainabilityReportPage() {
               <OverviewCards summary={summary} />
               <ProcessingMetricsTable metrics={processingMetrics} />
             </>
+          ) : !error ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card py-16 text-center">
+              <BarChart3 className="mb-4 h-10 w-10 text-muted-foreground/50" />
+              <p className="text-sm font-medium">Nenhuma análise encontrada</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Execute o coletor para registrar sua primeira análise.
+              </p>
+            </div>
           ) : null}
 
           {/* Insights gerados por IA — carrega de forma independente */}

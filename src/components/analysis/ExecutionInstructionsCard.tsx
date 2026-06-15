@@ -1,30 +1,69 @@
+import { useState } from "react";
 import { ExternalLink, HelpCircle } from "lucide-react";
 import type { AnalysisInstructionsContent } from "@/types/code-analysis";
 import { PrerequisitesSection } from "./PrerequisitesSection";
 import { InstallationStepsSection } from "./InstallationStepsSection";
+import { WindowsCollectorCard } from "./WindowsCollectorCard";
 
 interface ExecutionInstructionsCardProps {
   content: AnalysisInstructionsContent;
 }
 
+type Platform = "linux" | "windows";
+
 export function ExecutionInstructionsCard({ content }: ExecutionInstructionsCardProps) {
+  const [platform, setPlatform] = useState<Platform>("linux");
+
   return (
     <article
       className="rounded-2xl border border-border bg-card"
       style={{ boxShadow: "var(--shadow-soft)" }}
     >
       <div className="border-b border-border px-4 py-4 sm:px-6 sm:py-5">
-        <h2 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
-          Instruções de Execução
-        </h2>
-        <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-          Configure o SCI Client localmente antes de iniciar a análise na plataforma.
-        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+              Instruções de Execução
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+              Configure o SCI Client localmente antes de iniciar a análise na plataforma.
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1 rounded-lg border border-border bg-muted/40 p-1 text-sm">
+            <button
+              onClick={() => setPlatform("linux")}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                platform === "linux"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              🐧 Linux / macOS
+            </button>
+            <button
+              onClick={() => setPlatform("windows")}
+              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                platform === "windows"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              🪟 Windows
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 px-4 py-4 sm:gap-8 sm:px-6 sm:py-6 lg:grid-cols-2 lg:gap-10">
-        <PrerequisitesSection items={content.prerequisites} />
-        <InstallationStepsSection steps={content.installationSteps} />
+      <div className="px-4 py-4 sm:px-6 sm:py-6">
+        {platform === "linux" ? (
+          <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-10">
+            <PrerequisitesSection items={content.prerequisites} />
+            <InstallationStepsSection steps={content.installationSteps} />
+          </div>
+        ) : (
+          <WindowsCollectorCard />
+        )}
       </div>
 
       <footer className="border-t border-border px-4 py-4 sm:px-6">

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   exportAnalysisPDF,
-  fetchMetricsSummaryMock,
-  fetchProcessingMetricsMock,
+  mapAnaliseToSummary,
+  mapAnaliseToProcessingMetrics,
 } from "@/lib/api/sustainability-report";
-import { fetchAnalyses } from "@/lib/api/dashboard";
+import { fetchAnalyses, fetchAnaliseDetail } from "@/lib/api/dashboard";
 import type { MetricsSummaryResponse, ProcessingMetric } from "@/types/sustainability-report";
 
 interface UseSustainabilityReportResult {
@@ -30,14 +30,19 @@ export function useSustainabilityReport(): UseSustainabilityReportResult {
     setError(null);
 
     try {
-      const [summaryData, processingData, analyses] = await Promise.all([
-        fetchMetricsSummaryMock(),
-        fetchProcessingMetricsMock(),
-        fetchAnalyses(),
-      ]);
-      setSummary(summaryData);
-      setProcessingMetrics(processingData);
-      setLatestAnalysisId(analyses[0]?.id ?? null);
+      const analyses = await fetchAnalyses();
+      if (analyses.length === 0) {
+        setSummary(null);
+        setProcessingMetrics([]);
+        setLatestAnalysisId(null);
+        return;
+      }
+
+      const latest = analyses[0];
+      const detail = await fetchAnaliseDetail(latest.id);
+      setSummary(mapAnaliseToSummary(detail));
+      setProcessingMetrics(mapAnaliseToProcessingMetrics(detail));
+      setLatestAnalysisId(detail.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao carregar o relatório.");
       setSummary(null);

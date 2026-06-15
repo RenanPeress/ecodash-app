@@ -1,104 +1,72 @@
 import type { SoftwareVersion, SoftwareVersionOption } from "@/types/version-comparison";
-import { API_BASE_URL, parseErrorMessage } from "./client";
+import { apiFetch } from "./client";
+import type { AnaliseDetail, AnaliseItem } from "./dashboard";
 
-/** Catálogo simulado — substituir por GET /api/versions quando o back-end estiver disponível */
-export const MOCK_SOFTWARE_VERSIONS: SoftwareVersion[] = [
-  {
-    versionId: "v2.1.0",
-    label: "v2.1.0 — Estável (Green)",
-    carbonCostGco2eq: 142,
-    executionTimeMs: 840,
-    cpuData: [
-      { core: "Core 1", usagePercent: 18 },
-      { core: "Core 2", usagePercent: 22 },
-      { core: "Core 3", usagePercent: 14 },
-      { core: "Core 4", usagePercent: 11 },
-    ],
-    memoryData: [
-      { time: "0s", memoryMb: 96 },
-      { time: "2s", memoryMb: 118 },
-      { time: "4s", memoryMb: 128 },
-      { time: "6s", memoryMb: 124 },
-      { time: "8s", memoryMb: 112 },
-      { time: "10s", memoryMb: 105 },
-    ],
-  },
-  {
-    versionId: "v2.0.0",
-    label: "v2.0.0 — LTS",
-    carbonCostGco2eq: 198,
-    executionTimeMs: 1120,
-    cpuData: [
-      { core: "Core 1", usagePercent: 28 },
-      { core: "Core 2", usagePercent: 31 },
-      { core: "Core 3", usagePercent: 24 },
-      { core: "Core 4", usagePercent: 19 },
-    ],
-    memoryData: [
-      { time: "0s", memoryMb: 112 },
-      { time: "2s", memoryMb: 148 },
-      { time: "4s", memoryMb: 172 },
-      { time: "6s", memoryMb: 168 },
-      { time: "8s", memoryMb: 154 },
-      { time: "10s", memoryMb: 140 },
-    ],
-  },
-  {
-    versionId: "v2.2.0-beta",
-    label: "v2.2.0-beta — Experimental",
-    carbonCostGco2eq: 118,
-    executionTimeMs: 720,
-    cpuData: [
-      { core: "Core 1", usagePercent: 15 },
-      { core: "Core 2", usagePercent: 19 },
-      { core: "Core 3", usagePercent: 12 },
-      { core: "Core 4", usagePercent: 9 },
-    ],
-    memoryData: [
-      { time: "0s", memoryMb: 88 },
-      { time: "2s", memoryMb: 102 },
-      { time: "4s", memoryMb: 110 },
-      { time: "6s", memoryMb: 108 },
-      { time: "8s", memoryMb: 98 },
-      { time: "10s", memoryMb: 92 },
-    ],
-  },
-  {
-    versionId: "v1.9.4",
-    label: "v1.9.4 — Legado",
-    carbonCostGco2eq: 265,
-    executionTimeMs: 1580,
-    cpuData: [
-      { core: "Core 1", usagePercent: 38 },
-      { core: "Core 2", usagePercent: 42 },
-      { core: "Core 3", usagePercent: 35 },
-      { core: "Core 4", usagePercent: 29 },
-    ],
-    memoryData: [
-      { time: "0s", memoryMb: 140 },
-      { time: "2s", memoryMb: 186 },
-      { time: "4s", memoryMb: 210 },
-      { time: "6s", memoryMb: 204 },
-      { time: "8s", memoryMb: 192 },
-      { time: "10s", memoryMb: 178 },
-    ],
-  },
-];
+export function mapAnaliseToSoftwareVersion(a: AnaliseDetail): SoftwareVersion {
+  const m = a.metrics;
+  const durationS = m?.duration_seconds ?? 0;
 
-export function getVersionOptions(): SoftwareVersionOption[] {
-  return MOCK_SOFTWARE_VERSIONS.map(({ versionId, label }) => ({ versionId, label }));
+  const cpuData = m
+    ? [
+        { core: "Média", usagePercent: m.cpu_percent_avg },
+        { core: "Pico", usagePercent: m.cpu_percent_peak },
+      ]
+    : [{ core: "Média", usagePercent: 0 }, { core: "Pico", usagePercent: 0 }];
+
+  const memoryData = m
+    ? buildMemoryTimeSeries(m.memory_used_mb_avg, m.memory_used_mb_peak, durationS)
+    : [{ time: "0s", memoryMb: 0 }];
+
+  const label = `#${a.id} — ${a.software_name} (${a.grade})`;
+
+  return {
+    versionId: String(a.id),
+    label,
+    carbonCostGco2eq: Math.round(a.sci_score * 1000) / 1000,
+    executionTimeMs: Math.round(durationS * 1000),
+    cpuData,
+    memoryData,
+  };
 }
 
-export function getVersionById(versionId: string): SoftwareVersion | undefined {
-  return MOCK_SOFTWARE_VERSIONS.find((v) => v.versionId === versionId);
-}
-
-/** GET /api/versions/:versionId — placeholder para integração futura */
-export async function fetchVersionById(versionId: string): Promise<SoftwareVersion> {
-  const response = await fetch(`${API_BASE_URL}/api/versions/${versionId}`);
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    throw new Error(parseErrorMessage(text, response.status));
+function buildMemoryTimeSeries(
+  avg: number,
+  peak: number,
+  durationS: number,
+): { time: string; memoryMb: number }[] {
+  const steps = Math.max(4, Math.min(8, Math.ceil(durationS)));
+  const points: { time: string; memoryMb: number }[] = [];
+  const peakAt = Math.floor(steps * 0.4);
+  for (let i = 0; i <= steps; i++) {
+    const t = Math.round((durationS * i) / steps);
+    let mem: number;
+    if (i === 0) {
+      mem = avg * 0.7;
+    } else if (i === peakAt) {
+      mem = peak;
+    } else if (i > peakAt) {
+      mem = peak - (peak - avg) * ((i - peakAt) / (steps - peakAt));
+    } else {
+      mem = avg * 0.7 + (peak - avg * 0.7) * (i / peakAt);
+    }
+    points.push({ time: `${t}s`, memoryMb: Math.round(mem * 10) / 10 });
   }
-  return response.json() as Promise<SoftwareVersion>;
+  return points;
+}
+
+export function analiseItemToOption(a: AnaliseItem): SoftwareVersionOption {
+  return {
+    versionId: String(a.id),
+    label: `#${a.id} — ${a.software_name} (${a.grade})`,
+  };
+}
+
+export async function fetchAllVersionOptions(): Promise<SoftwareVersionOption[]> {
+  const analyses = await apiFetch<AnaliseItem[]>("/api/analyses/");
+  return analyses.map(analiseItemToOption);
+}
+
+export async function fetchVersionDetail(id: string): Promise<SoftwareVersion> {
+  const detail = await apiFetch<AnaliseDetail>(`/api/analyses/${id}/`);
+  return mapAnaliseToSoftwareVersion(detail);
 }
