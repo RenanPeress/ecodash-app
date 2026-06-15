@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  exportReportDataMock,
+  exportAnalysisPDF,
   fetchMetricsSummaryMock,
   fetchProcessingMetricsMock,
 } from "@/lib/api/sustainability-report";
-import type {
-  ExportReportPayload,
-  MetricsSummaryResponse,
-  ProcessingMetric,
-} from "@/types/sustainability-report";
+import { fetchAnalyses } from "@/lib/api/dashboard";
+import type { MetricsSummaryResponse, ProcessingMetric } from "@/types/sustainability-report";
 
 interface UseSustainabilityReportResult {
   summary: MetricsSummaryResponse | null;
@@ -23,6 +20,7 @@ interface UseSustainabilityReportResult {
 export function useSustainabilityReport(): UseSustainabilityReportResult {
   const [summary, setSummary] = useState<MetricsSummaryResponse | null>(null);
   const [processingMetrics, setProcessingMetrics] = useState<ProcessingMetric[]>([]);
+  const [latestAnalysisId, setLatestAnalysisId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,12 +30,14 @@ export function useSustainabilityReport(): UseSustainabilityReportResult {
     setError(null);
 
     try {
-      const [summaryData, processingData] = await Promise.all([
+      const [summaryData, processingData, analyses] = await Promise.all([
         fetchMetricsSummaryMock(),
         fetchProcessingMetricsMock(),
+        fetchAnalyses(),
       ]);
       setSummary(summaryData);
       setProcessingMetrics(processingData);
+      setLatestAnalysisId(analyses[0]?.id ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao carregar o relatório.");
       setSummary(null);
@@ -52,24 +52,23 @@ export function useSustainabilityReport(): UseSustainabilityReportResult {
   }, [loadData]);
 
   const exportData = useCallback(async () => {
-    if (!summary) return;
+    if (!latestAnalysisId) return;
 
     setIsExporting(true);
     try {
-      const payload: ExportReportPayload = {
-        format: "xlsx",
-        analysisDate: summary.analysisDate,
-        summary,
-        processingMetrics,
-      };
-      const result = await exportReportDataMock(payload);
-      console.info("[useSustainabilityReport] Exportação concluída:", result);
+      const blob = await exportAnalysisPDF(latestAnalysisId);
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = `ecodash-relatorio-${latestAnalysisId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(href);
     } catch (err) {
       console.error("[useSustainabilityReport] Falha na exportação:", err);
     } finally {
       setIsExporting(false);
     }
-  }, [summary, processingMetrics]);
+  }, [latestAnalysisId]);
 
   return {
     summary,

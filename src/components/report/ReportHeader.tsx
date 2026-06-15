@@ -41,7 +41,7 @@ export function ReportHeader({
           disabled={isLoading || isExporting || !analysisDate}
         >
           <Download className="h-4 w-4" />
-          {isExporting ? "Exportando..." : "Exportar Dados"}
+          {isExporting ? "Exportando..." : "Exportar PDF"}
         </Button>
       </div>
 

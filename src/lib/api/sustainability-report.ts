@@ -5,6 +5,7 @@ import type {
   ProcessingMetric,
 } from "@/types/sustainability-report";
 import { API_BASE_URL, parseErrorMessage } from "./client";
+import { getAuthToken } from "@/lib/auth-token";
 
 const API_BASE = `${API_BASE_URL}/api`;
 
@@ -38,6 +39,19 @@ export async function exportReportData(
     body: JSON.stringify(payload),
   });
   return handleResponse<ExportReportResponse>(response);
+}
+
+/** GET /api/analyses/<pk>/export/pdf/ */
+export async function exportAnalysisPDF(pk: number): Promise<Blob> {
+  const token = getAuthToken();
+  const response = await fetch(`${API_BASE}/analyses/${pk}/export/pdf/`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(parseErrorMessage(text, response.status));
+  }
+  return response.blob();
 }
 
 /** Dados simulados — substituir pelas funções acima quando o back-end estiver disponível */
